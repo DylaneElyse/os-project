@@ -1,26 +1,61 @@
-@import "tailwindcss";
+/* app/globals.css */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* 1. Inject Tailwind's base, components, and utilities styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* 2. Your custom global styles and CSS variables */
+/* It's good practice to put these within a @layer directive if they are
+  meant to be part of Tailwind's layering system, or simply after the
+  @tailwind directives. For base styles like :root and body, @layer base is appropriate. */
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #171717;
+
+    /* Assuming --font-geist-sans and --font-geist-mono are either:
+      a) Defined elsewhere (e.g., in your layout.js via next/font for Geist)
+      b) Or you intend to set them up as custom fonts in tailwind.config.js
+       Adding fallbacks here for robustness. */
+    --font-sans: var(--font-geist-sans, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    --font-mono: var(--font-geist-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+
+    /* The --color-background and --color-foreground are just aliases here.
+      You can use --background and --foreground directly in your components,
+      or keep these aliases if you prefer. The second :root block you had
+      was redundant if its only purpose was these aliases. */
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: #0a0a0a;
+      --foreground: #ededed;
+    }
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    /* If you want to use the --font-sans variable (which might be Geist Sans),
+      you should apply it here. Otherwise, Arial/Helvetica will take precedence.
+      Tailwind's 'font-sans' class would typically apply the sans-serif font
+       defined in your tailwind.config.js. */
+    font-family: var(--font-sans);
+    /* Or, if you prefer your original explicit stack for some reason:
+    font-family: Arial, Helvetica, sans-serif;
+    */
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+/* You can also add custom components or utilities using @layer components or @layer utilities
+  For example:
+  @layer components {
+    .my-custom-button {
+      @apply py-2 px-4 bg-blue-500 text-white;
+    }
+  }
+*/
