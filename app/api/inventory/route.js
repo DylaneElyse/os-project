@@ -4,7 +4,7 @@ import pool from "../../../lib/db";
 export async function GET(request) {
   try {
     // UPDATED: Query the 'inventory' table
-    const { rows } = await pool.query('SELECT * FROM inventory ORDER BY id ASC');
+    const { rows } = await pool.query('SELECT * FROM inventory ORDER BY item_id ASC');
     return NextResponse.json(rows, { status: 200 });
   } catch (error) {
     console.error('Error fetching inventory:', error);
@@ -17,7 +17,7 @@ export async function POST(request) {
     const { item_name, quantity } = await request.json();
     // UPDATED: Insert into the 'inventory' table
     const result = await pool.query(
-      'INSERT INTO inventory (name, quantity) VALUES ($1, $2) RETURNING *',
+      'INSERT INTO inventory (item_id, item_name, quantity) VALUES (DEFAULT, $1, $2) RETURNING *',
       [item_name, quantity]
     );
     return NextResponse.json(result.rows[0], { status: 201 });

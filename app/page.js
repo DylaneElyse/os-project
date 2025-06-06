@@ -100,8 +100,8 @@ export default function HomePage() {
             {inventory.length > 0 ? (
               <ul className="space-y-3">
                 {inventory.map((item) => (
-                  <li key={item.id} className="flex justify-between items-center p-3 bg-gray-100 rounded">
-                    <span className="font-semibold text-gray-800">{item.name}</span>
+                  <li key={item.item_id} className="flex justify-between items-center p-3 bg-gray-100 rounded">
+                    <span className="font-semibold text-gray-800">{item.item_name}</span>
                     <span className="text-gray-600">Quantity: {item.quantity}</span>
                   </li>
                 ))}
