@@ -1,5 +1,4 @@
 services:
-  # PostgreSQL Database Service
   postgres:
     image: postgres:14-alpine
     container_name: os-project-db
@@ -7,13 +6,11 @@ services:
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: postgres # <-- CHANGE THIS from students to postgres
+      POSTGRES_DB: postgres 
     volumes:
       - db-data:/var/lib/postgresql/data
-      # Add this to run our initialization script
       - ./db:/docker-entrypoint-initdb.d
     
-  # Next.js Web App Service
   webapp:
     build:
       context: . 
@@ -26,7 +23,7 @@ services:
     environment:
       USER: myuser
       HOST: postgres
-      DATABASE: postgres # <-- CHANGE THIS from students to postgres
+      DATABASE: postgres 
       PASSWORD: mypassword
       DB_PORT: 5432
 

@@ -5,10 +5,9 @@ import { useState, useEffect } from 'react';
 export default function HomePage() {
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [inventory, setInventory] = useState([]); // State to hold the inventory list
+  const [inventory, setInventory] = useState([]); 
   const [error, setError] = useState(null);
 
-  // --- 1. Function to fetch inventory data ---
   const fetchInventory = async () => {
     try {
       const res = await fetch('/api/inventory');
@@ -22,10 +21,9 @@ export default function HomePage() {
     }
   };
 
-  // --- 2. useEffect to fetch data when the component loads ---
   useEffect(() => {
     fetchInventory();
-  }, []); // The empty array means this effect runs only once on mount
+  }, []); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,11 +42,9 @@ export default function HomePage() {
         throw new Error('Failed to add item');
       }
 
-      // Clear the form
       setName('');
       setQuantity('');
       
-      // --- 3. Re-fetch the inventory to show the new item ---
       fetchInventory();
 
     } catch (err) {
@@ -61,7 +57,6 @@ export default function HomePage() {
       <div className="w-full max-w-md">
         <h1 className="text-3xl font-bold text-center mb-6">Inventory Management</h1>
         
-        {/* --- Form to Add Items --- */}
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
           <div className="mb-4">
             <label htmlFor="name" className="block text-gray-700 font-bold mb-2">Item Name</label>
@@ -93,7 +88,6 @@ export default function HomePage() {
           {error && <p className="text-red-500 text-xs italic mt-4">{error}</p>}
         </form>
 
-        {/* --- 4. Section to Display Inventory --- */}
         <div className="mt-10">
           <h2 className="text-2xl font-bold text-center mb-4">Current Inventory</h2>
           <div className="bg-white p-6 rounded-lg shadow-md">
