@@ -5,8 +5,9 @@ import { useState, useEffect } from 'react';
 export default function HomePage() {
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [inventory, setInventory] = useState([]); 
+  const [inventory, setInventory] = useState([]);
   const [error, setError] = useState(null);
+  const [editingItem, setEditingItem] = useState(null); // State to track the item being edited
 
   const fetchInventory = async () => {
     try {
@@ -15,7 +16,7 @@ export default function HomePage() {
         throw new Error('Failed to fetch inventory');
       }
       const data = await res.json();
-      setInventory(data); // Update the state with the fetched data
+      setInventory(data);
     } catch (err) {
       setError(err.message);
     }
@@ -23,7 +24,7 @@ export default function HomePage() {
 
   useEffect(() => {
     fetchInventory();
-  }, []); 
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,7 +45,38 @@ export default function HomePage() {
 
       setName('');
       setQuantity('');
-      
+      fetchInventory();
+
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleEdit = (item) => {
+    setEditingItem({ ...item });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingItem(null);
+  };
+
+  const handleUpdate = async (id) => {
+    setError(null);
+
+    try {
+      const res = await fetch('/api/inventory', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, quantity: parseInt(editingItem.quantity) }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to update item');
+      }
+
+      setEditingItem(null);
       fetchInventory();
 
     } catch (err) {
@@ -56,8 +88,9 @@ export default function HomePage() {
     <main className="flex min-h-screen flex-col items-center p-24 bg-gray-50">
       <div className="w-full max-w-md">
         <h1 className="text-3xl font-bold text-center mb-6">Inventory Management</h1>
-        
+
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
+          {/* ... (form for adding items remains the same) ... */}
           <div className="mb-4">
             <label htmlFor="name" className="block text-gray-700 font-bold mb-2">Item Name</label>
             <input
@@ -95,8 +128,29 @@ export default function HomePage() {
               <ul className="space-y-3">
                 {inventory.map((item) => (
                   <li key={item.id} className="flex justify-between items-center p-3 bg-gray-100 rounded">
-                    <span className="font-semibold text-gray-800">{item.name}</span>
-                    <span className="text-gray-600">Quantity: {item.quantity}</span>
+                    {editingItem && editingItem.id === item.id ? (
+                      <>
+                        <span className="font-semibold text-gray-800">{item.name}</span>
+                        <input
+                          type="number"
+                          value={editingItem.quantity}
+                          onChange={(e) => setEditingItem({ ...editingItem, quantity: e.target.value })}
+                          className="shadow-sm appearance-none border rounded w-24 py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        />
+                        <div>
+                          <button onClick={() => handleUpdate(item.id)} className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded text-sm">Save</button>
+                          <button onClick={handleCancelEdit} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-sm ml-2">Cancel</button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <span className="font-semibold text-gray-800">{item.name}</span>
+                        <div className="flex items-center">
+                          <span className="text-gray-600 mr-4">Quantity: {item.quantity}</span>
+                          <button onClick={() => handleEdit(item)} className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded text-sm">Edit</button>
+                        </div>
+                      </>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -105,7 +159,6 @@ export default function HomePage() {
             )}
           </div>
         </div>
-
       </div>
     </main>
   );
